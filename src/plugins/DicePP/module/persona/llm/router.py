@@ -20,6 +20,9 @@ from .selection import SelectionPolicy
 from .loop import AgentLoop, LoopResult
 
 if TYPE_CHECKING:
+    from ..tools.registry import ToolRegistry
+
+if TYPE_CHECKING:
     from ...core.config.pydantic_models import PersonaConfig, ProviderConfig, ModelConfig
 
 
@@ -264,7 +267,7 @@ class LLMRouter:
         tools: Optional[List[Dict]] = None,
         max_tool_rounds: int = 5,
         max_round_callbacks: int = 3,
-        tool_registry: Any = None,
+        tool_registry: Optional["ToolRegistry"] = None,
         tool_domains: Optional[List[str]] = None,
         tool_ctx: Any = None,
         hooks: Optional[List] = None,

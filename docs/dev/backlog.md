@@ -85,20 +85,6 @@
     - 影响面: llm/loop.py（AgentLoop）、llm/hook_protocol.py（扩展）、llm/hooks.py（适配）
     - 风险: 中——核心循环变更，需全量 AgentLoop 测试覆盖
 
-### [B-260519-fcac7d] 统一工具执行模型（EventGenerationAgent 走 ToolRegistry）
-- 创建: 2026-05-19
-- 问题表现:
-    - ToolRegistry 设计 ToolDomain.CHAT 和 ToolDomain.LIFE，但 life 域从未注册任何工具
-    - EventGenerationAgent 使用 collecting.py 的 make_collecting_executor 绕过 ToolRegistry
-    - 工具系统存在两套执行路径：chat 域走 ToolRegistry，life 域走 collecting executor
-    - 参考: tools-analyzer 报告 T1、T7
-- 工作计划:
-    - 方案: 为 life 域注册正式工具（record_event/record_reaction 等），替换 collecting executor
-    - EventGenerationAgent 复用 ToolRegistry 和 AgentLoop，不再自建实例
-    - 验证: life 事件生成端到端测试，工具调用结果与 collecting 模式一致
-    - 影响面: tools/registry.py、life/event_agent.py、tools/collecting.py（可移除）
-    - 风险: 中——life 路径涉及 LLM 调用 + 工具交互，需仔细回归
-
 ### [B-260515-dd50eb] 用户自带 API Key 功能（.ai key config）
 - 创建: 2026-05-15
 - 问题表现: 用户可通过 .ai key config 命令提供自己的 LLM API key，覆盖全局配置。涉及计费体系、配额管理、滥用防护等一整套体系，当前设计对安全边界覆盖不足。该功能与 provider 路由重构的候选池调度、熔断器、探针等核心机制耦合过深，增加了不必要的复杂度。当前从本分支 scope 中移出，需求保留待后续独立实施。
